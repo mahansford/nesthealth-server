@@ -1,5 +1,5 @@
 # Builds the NestHealth server image for amd64 and arm64 (Raspberry Pi) and publishes it to
-# Docker Hub as mahansford/nesthealth-server.
+# Docker Hub as hansford909/nesthealth-server.
 #   Tag vX.Y.Z  -> X.Y.Z, X.Y, X and latest
 #   Run manually from the Actions tab -> latest
 # Needs the repository variable DOCKERHUB_USERNAME and the secret DOCKERHUB_TOKEN (a Docker Hub access token).
@@ -30,7 +30,7 @@ jobs:
       - id: meta
         uses: docker/metadata-action@v5
         with:
-          images: docker.io/mahansford/nesthealth-server
+          images: docker.io/hansford909/nesthealth-server
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
