@@ -1,7 +1,7 @@
 services:
   nesthealth:
-    build: .
-    image: nesthealth-server:latest
+    image: hansford909/nesthealth-server:latest
+    # To build from the source code instead, replace the line above with:  build: .
     container_name: nesthealth
     restart: unless-stopped
     ports:

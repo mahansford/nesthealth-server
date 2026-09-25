@@ -6,13 +6,24 @@ Full documentation: **https://nesthealth.soam.uk/docs**
 
 ## Quick start (Docker)
 
+The image is on Docker Hub as [`hansford909/nesthealth-server`](https://hub.docker.com/r/hansford909/nesthealth-server) for amd64 and arm64 (Raspberry Pi). With the `docker-compose.yml` from this folder:
+
 ```bash
-docker compose up -d --build
+docker compose up -d
+```
+
+Or without a compose file:
+
+```bash
+docker run -d --name nesthealth --restart unless-stopped -p 8080:8080 \
+  -e TZ=Europe/London -v nesthealth-data:/data hansford909/nesthealth-server
 ```
 
 Then open `http://<this-computer's-address>:8080` and create the first account. That account is the admin, and it can add the rest of the family under **Settings → Family Accounts**.
 
 In the NestHealth iPhone app, choose **Share with the family**, enter the same address and sign in.
+
+To build the image from this source code instead, change `image:` to `build: .` in `docker-compose.yml` and run `docker compose up -d --build`.
 
 ## Without Docker
 
@@ -32,7 +43,11 @@ docker run --rm -v nesthealth-data:/data -v "$PWD":/backup alpine tar czf /backu
 
 ## Updating
 
-Download the new version, replace these files (your records live in the `nesthealth-data` volume, not here), then run `docker compose up -d --build` again.
+```bash
+docker compose pull && docker compose up -d
+```
+
+Your records live in the `nesthealth-data` volume, so they're kept. If you build from source, update the files (`git pull`) and run `docker compose up -d --build`.
 
 ## Licence
 
