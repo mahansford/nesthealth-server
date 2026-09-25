@@ -1,0 +1,17 @@
+services:
+  nesthealth:
+    build: .
+    image: nesthealth-server:latest
+    container_name: nesthealth
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - TZ=Europe/London   # used for the times shown in notifications
+      # The HTTPS address your family uses, if you have one (needed for passkeys behind a proxy):
+      # - PUBLIC_URL=https://health.example.com
+    volumes:
+      - nesthealth-data:/data   # the database and photos
+
+volumes:
+  nesthealth-data:
