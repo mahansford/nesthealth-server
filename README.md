@@ -36,13 +36,13 @@ When someone in the family is poorly, it's hard to remember who had what and whe
 This repository is the **NestHealth server**: a small, dependency-free Node.js program that stores your family's records in SQLite and serves both the API for the NestHealth iPhone app and a full **web app** that works in any browser.
 
 <p align="center">
-  <img src=".github/assets/1-family.jpg" width="200" alt="Family screen: each child's latest temperature and when their next dose is due">
+  <img src=".github/assets/1-family.png" width="200" alt="Family screen: each child's latest temperature and when their next dose is due">
   &nbsp;
-  <img src=".github/assets/2-child.jpg" width="200" alt="A child's page with a temperature chart and doses marked">
+  <img src=".github/assets/2-child.png" width="200" alt="A child's page with a temperature chart and doses marked">
   &nbsp;
-  <img src=".github/assets/3-temperature.jpg" width="200" alt="Logging a temperature">
+  <img src=".github/assets/3-temperature.png" width="200" alt="Logging a temperature">
   &nbsp;
-  <img src=".github/assets/5-log.jpg" width="200" alt="The whole family's log">
+  <img src=".github/assets/5-log.png" width="200" alt="The whole family's log">
 </p>
 <p align="center"><sub>The NestHealth iPhone app, connected to a NestHealth server.</sub></p>
 
