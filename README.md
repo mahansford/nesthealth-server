@@ -104,7 +104,9 @@ docker run -d --name nesthealth --restart unless-stopped -p 8080:8080 \
 
 Then open `http://<server-address>:8080` (for example `http://192.168.1.20:8080`) and create the first account. That account is the **admin**, who adds the rest of the family under **Settings → Family Accounts**.
 
-It also runs in NAS apps such as Synology Container Manager, Unraid and Portainer: use the image `hansford909/nesthealth-server`, port `8080`, and a volume or folder mounted at `/data`.
+It also runs in NAS apps such as Synology Container Manager and Portainer: use the image `hansford909/nesthealth-server`, port `8080`, and a volume or folder mounted at `/data`. If you mount a folder, set `PUID` and `PGID` to the user and group that own it.
+
+**Unraid:** install **NestHealth** from Community Applications (or add the template from `https://raw.githubusercontent.com/mahansford/nesthealth-server/main/unraid/nesthealth.xml`). It stores data in `/mnt/user/appdata/nesthealth` and runs as `99:100`.
 
 <details>
 <summary><strong>Building the image from source</strong></summary>
@@ -192,6 +194,7 @@ Set these as environment variables (in the `environment` section of `docker-comp
 | `TZ` | `Europe/London` in the compose file | Time zone for times shown in notifications |
 | `PUBLIC_URL` | From the request | The HTTPS address people use. Set it if passkeys fail behind a proxy |
 | `VAPID_SUBJECT` | A placeholder address | A contact address (`mailto:you@example.com`) sent to Web Push services |
+| `PUID`, `PGID` | `1000` | The user and group the server runs as in Docker. The data folder is handed to them on start-up (Unraid uses `99` and `100`) |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME` | Not set | Create the first admin account on start-up (remove them afterwards) |
 
 ## Backups and updating

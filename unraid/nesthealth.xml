@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>NestHealth</Name>
+  <Repository>hansford909/nesthealth-server</Repository>
+  <Registry>https://hub.docker.com/r/hansford909/nesthealth-server</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/mahansford/nesthealth-server/issues</Support>
+  <Project>https://nesthealth.soam.uk</Project>
+  <ReadMe>https://github.com/mahansford/nesthealth-server#readme</ReadMe>
+  <Overview>A private, self-hosted fever and medicine log for families. Every parent's phone shares the same temperatures and doses, and nothing leaves your home.&#xD;
+&#xD;
+Log temperatures and medicines in seconds, see at a glance when the next dose can be given (from the timings you set from each medicine's label), and get reminders and alerts. Includes a web app for any browser, and works with the NestHealth iPhone app. Accounts for each parent, passkeys over HTTPS, Web Push, and webhooks for ntfy, Home Assistant, Discord and Slack.&#xD;
+&#xD;
+After starting, open the WebUI and create the first account: it becomes the admin, who adds the rest of the family. NestHealth is a logbook, not medical advice, and it never calculates doses.</Overview>
+  <Category>Productivity: Tools:Utilities</Category>
+  <WebUI>http://[IP]:[PORT:8080]/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/mahansford/nesthealth-server/main/unraid/nesthealth.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/mahansford/nesthealth-server/main/.github/assets/nesthealth-icon.png</Icon>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires/>
+  <Config Name="WebUI port" Target="8080" Default="8080" Mode="tcp" Description="Port for the web app and the iPhone app's connection." Type="Port" Display="always" Required="true" Mask="false">8080</Config>
+  <Config Name="Data" Target="/data" Default="/mnt/user/appdata/nesthealth" Mode="rw" Description="The database and photos. Back this folder up." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/nesthealth</Config>
+  <Config Name="Time zone" Target="TZ" Default="Europe/London" Mode="" Description="Used for the times shown in notifications, for example Europe/London or America/New_York." Type="Variable" Display="always" Required="false" Mask="false">Europe/London</Config>
+  <Config Name="PUID" Target="PUID" Default="99" Mode="" Description="User ID the server runs as (99 is Unraid's nobody)." Type="Variable" Display="advanced" Required="false" Mask="false">99</Config>
+  <Config Name="PGID" Target="PGID" Default="100" Mode="" Description="Group ID the server runs as (100 is Unraid's users)." Type="Variable" Display="advanced" Required="false" Mask="false">100</Config>
+  <Config Name="Public URL" Target="PUBLIC_URL" Default="" Mode="" Description="Optional. The HTTPS address your family uses (for example https://health.example.com). Set it if passkeys fail behind a reverse proxy." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Web Push contact" Target="VAPID_SUBJECT" Default="" Mode="" Description="Optional. A contact address sent to Web Push services, for example mailto:you@example.com." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+</Container>

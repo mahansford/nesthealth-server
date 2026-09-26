@@ -37,6 +37,37 @@ jobs:
             type=semver,pattern={{major}}
             type=raw,value=latest
 
+      # Smoke test before publishing: an Unraid-style root-owned folder with PUID/PGID 99:100,
+      # and a plain named volume with the defaults. Nothing is pushed if either fails.
+      - name: Build test image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          tags: nesthealth:test
+          cache-from: type=gha
+
+      - name: Smoke test
+        run: |
+          set -eu
+          sudo mkdir -p /tmp/nh && sudo chown root:root /tmp/nh
+          docker run -d --name nh-unraid -e PUID=99 -e PGID=100 -v /tmp/nh:/data -p 8091:8080 nesthealth:test
+          docker run -d --name nh-default -v nh-data:/data -p 8092:8080 nesthealth:test
+          for port in 8091 8092; do
+            for i in $(seq 30); do curl -fs "http://localhost:$port/healthz" >/dev/null && break; sleep 1; done
+            test "$(curl -fs "http://localhost:$port/healthz")" = ok
+            curl -fs "http://localhost:$port/api/auth/status" | grep -q setupRequired
+          done
+          test "$(sudo stat -c %u:%g /tmp/nh/family-health.db)" = "99:100"
+          test "$(docker exec nh-unraid sh -c 'stat -c %u /proc/1')" = 99
+          test "$(docker exec nh-default sh -c 'stat -c %u /proc/1')" = 1000
+          echo "Smoke test passed"
+
+      - name: Show logs if the smoke test failed
+        if: failure()
+        run: docker logs nh-unraid; docker logs nh-default
+
       - uses: docker/build-push-action@v6
         with:
           context: .
