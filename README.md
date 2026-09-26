@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/assets/icon.png" width="112" height="112" alt="NestHealth icon">
+  <img src=".github/assets/nesthealth-icon.png" width="112" height="112" alt="NestHealth icon">
 </p>
 
 <h1 align="center">NestHealth server</h1>
