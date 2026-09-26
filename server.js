@@ -191,11 +191,16 @@ function removePhoto(table, id) {
 // ---------- notifications ----------
 const markSent = (key) => db.prepare('INSERT OR IGNORE INTO sent_notifications (key, at) VALUES (?, ?)').run(key, Date.now()).changes === 1;
 
-async function dispatch(ev, { onlyWebhook = null } = {}) {
+// `onlyUser` limits a notification to one account's own devices (used by Send Test Notification):
+// { id, parentId, endpoint } where endpoint is the browser's current Web Push subscription.
+async function dispatch(ev, { onlyWebhook = null, onlyUser = null } = {}) {
   const results = [];
+  const mineWeb = (sub) => !onlyUser || sub.endpoint === onlyUser.endpoint || (onlyUser.parentId != null && sub.parent_id === onlyUser.parentId);
+  const mineApp = (d) => !onlyUser || d.user_id === onlyUser.id;
   if (!onlyWebhook) {
     for (const sub of db.prepare('SELECT * FROM push_subs').all()) {
       if (ev.excludeParent && sub.parent_id === ev.excludeParent) continue;
+      if (!mineWeb(sub)) continue;
       try {
         const status = await sendPush(sub, { title: ev.title, body: ev.body, tag: ev.tag, url: ev.url || '/', urgent: ev.urgent }, VAPID, VAPID_SUBJECT);
         if (status === 404 || status === 410) db.prepare('DELETE FROM push_subs WHERE id=?').run(sub.id);
@@ -208,13 +213,15 @@ async function dispatch(ev, { onlyWebhook = null } = {}) {
   if (!onlyWebhook && APNs.enabled() && !ev.localOnApp) {
     for (const d of db.prepare('SELECT * FROM apns_devices').all()) {
       if (ev.excludeParent && d.parent_id === ev.excludeParent) continue;
+      if (!mineApp(d)) continue;
       const r = await APNs.send(d, { title: ev.title, body: ev.body, tag: ev.tag, urgent: ev.urgent, personId: ev.personId });
       if (r.status === 410 || (r.status === 400 && /BadDeviceToken|DeviceTokenNotForTopic/.test(r.reason))) db.prepare('DELETE FROM apns_devices WHERE id=?').run(d.id);
       else db.prepare('UPDATE apns_devices SET last_status=? WHERE id=?').run(r.status, d.id);
       results.push({ app: d.device || 'iPhone', status: r.status, ...(r.reason ? { reason: r.reason } : {}) });
     }
   }
-  const hooks = onlyWebhook ? [onlyWebhook] : db.prepare('SELECT * FROM webhooks WHERE enabled=1').all();
+  // Webhooks are shared by the family, so a personal test skips them (each webhook has its own Send Test).
+  const hooks = onlyWebhook ? [onlyWebhook] : onlyUser ? [] : db.prepare('SELECT * FROM webhooks WHERE enabled=1').all();
   for (const hook of hooks) {
     try {
       const status = await sendWebhook(hook, ev);
@@ -743,7 +750,10 @@ async function api(req, res, url) {
   }
 
   if (resource === 'notify' && idStr === 'test' && m === 'POST') {
-    const results = await dispatch({ event: 'test', title: 'NestHealth', body: 'Test notification – everything is working.' });
+    // Only the signed-in person's own phones and browsers, never the rest of the family.
+    const b = await readBody(req).catch(() => ({}));
+    const onlyUser = { id: req.user.id, parentId: req.user.parent_id ?? null, endpoint: str(b.endpoint, 1000) };
+    const results = await dispatch({ event: 'test', title: 'NestHealth', body: 'Test notification – everything is working.' }, { onlyUser });
     return send(res, 200, { results });
   }
 

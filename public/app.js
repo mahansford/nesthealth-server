@@ -735,8 +735,8 @@ function viewNotifications() {
       $$('[data-hook]', root).forEach((b) => b.addEventListener('click', () => webhookSheet(S.webhooks.find((h) => h.id === +b.dataset.hook))));
       $('[data-new-hook]', root).addEventListener('click', () => webhookSheet());
       $('[data-test]', root).addEventListener('click', async () => {
-        const { results } = await api('POST', 'notify/test');
-        if (!results.length) return toast('No devices or webhooks set up', true);
+        const { results } = await api('POST', 'notify/test', { endpoint: S.pushEndpoint || null });
+        if (!results.length) return toast('Turn on push notifications for this device first', true);
         const bad = results.filter((r) => r.error || r.status >= 300).length;
         toast(bad ? `${bad} of ${results.length} failed` : `Sent to ${results.length}`, !!bad);
         await loadAll(); render();
